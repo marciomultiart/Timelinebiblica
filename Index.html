@@ -1,0 +1,3238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linha do Tempo Bíblica</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .timeline-container {
+            padding: 40px;
+            position: relative;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #8B4513, #D2691E, #CD853F);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #8B4513;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .comment-toggle {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-toggle:hover {
+            background: #A0522D;
+            transform: translateY(-1px);
+        }
+
+        .comments-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F8F9FA;
+            border-radius: 10px;
+            border-left: 3px solid #8B4513;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .comments-section.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                padding: 0 15px;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+                padding: 15px;
+            }
+        }
+
+        .comment-form {
+            margin-bottom: 15px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E9ECEF;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .comment-submit {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .comment-submit:hover {
+            background: #A0522D;
+        }
+
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #DAA520;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #8B4513;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .comment-text {
+            color: #555;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .comment-date {
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .no-comments {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 30px;
+            width: 16px;
+            height: 16px;
+            background: #8B4513;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px #8B4513;
+        }
+
+        .patriarch .timeline-item::before {
+            background: #DAA520;
+            box-shadow: 0 0 0 3px #DAA520;
+        }
+
+        .event .timeline-item::before {
+            background: #DC143C;
+            box-shadow: 0 0 0 3px #DC143C;
+        }
+
+        .empire .timeline-item::before {
+            background: #4B0082;
+            box-shadow: 0 0 0 3px #4B0082;
+        }
+
+        .year {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 8px;
+        }
+
+        .name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .details {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .patriarch-dot { background: #DAA520; }
+        .event-dot { background: #DC143C; }
+        .empire-dot { background: #4B0082; }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .admin-toggle:hover {
+            background: #A0522D;
+        }
+
+        .banner-slot {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border-radius: 15px;
+            border: 3px dashed #8B4513;
+            text-align: center;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner-content {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .banner-content img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .banner-content iframe {
+            width: 100%;
+            height: 250px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .banner-placeholder {
+            color: #8B4513;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .banner-edit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .banner-slot:hover .banner-edit-btn {
+            opacity: 1;
+        }
+
+        .admin-form {
+            margin-top: 15px;
+        }
+
+        .admin-form input, .admin-form select, .admin-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 2px solid #E9ECEF;
+            border-radius: 6px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .admin-form button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+
+        .admin-form button:hover {
+            background: #A0522D;
+        }
+
+        .admin-form button.cancel {
+            background: #6C757D;
+        }
+
+        .admin-form button.cancel:hover {
+            background: #5A6268;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #E9ECEF;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            background: #8B4513;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: #8B4513;
+            color: white;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes slideOutUp {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+        }
+
+        .notification {
+            font-family: inherit;
+        }
+
+        .floating-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border-top: 3px solid #DAA520;
+            animation: slideUpFooter 0.5s ease;
+        }
+
+        .floating-footer::before {
+            content: '💬';
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+
+        .floating-footer::after {
+            content: '📜';
+            margin-left: 10px;
+            font-size: 1.3rem;
+        }
+
+        @keyframes slideUpFooter {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .floating-footer:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #CD853F 100%);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Add bottom padding to body to prevent content overlap */
+        body {
+            padding-bottom: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .timeline-container {
+                padding: 20px;
+            }
+            
+            .timeline {
+                padding-left: 40px;
+            }
+            
+            .timeline-item {
+                padding: 20px;
+            }
+            
+            .notification {
+                left: 10px;
+                right: 10px;
+                transform: none;
+                max-width: calc(100% - 20px);
+            }
+
+            .floating-footer {
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+
+            body {
+                padding-bottom: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="admin-toggle" onclick="toggleAdminPanel()">⚙️ Admin</button>
+    
+    <div class="admin-panel" id="adminPanel">
+        <h3>🔧 Painel de Administração</h3>
+        <p>Clique em "Editar" nos espaços de banner para adicionar imagens ou vídeos.</p>
+        <div id="adminForm" style="display: none;">
+            <div class="admin-form">
+                <h4>Editar Banner</h4>
+                <select id="contentType" onchange="toggleContentFields()">
+                    <option value="">Selecione o tipo</option>
+                    <option value="image">Imagem</option>
+                    <option value="video">Vídeo (YouTube)</option>
+                    <option value="text">Texto/Banner</option>
+                </select>
+                
+                <div id="imageFields" style="display: none;">
+                    <input type="url" id="imageUrl" placeholder="URL da imagem (https://...)">
+                    <input type="text" id="imageAlt" placeholder="Descrição da imagem">
+                </div>
+                
+                <div id="videoFields" style="display: none;">
+                    <input type="text" id="videoId" placeholder="ID do vídeo do YouTube">
+                    <small>Ex: se o link é youtube.com/watch?v=ABC123, digite apenas: ABC123</small>
+                </div>
+                
+                <div id="textFields" style="display: none;">
+                    <input type="text" id="bannerTitle" placeholder="Título do banner">
+                    <textarea id="bannerText" placeholder="Texto do banner" rows="3"></textarea>
+                    <input type="color" id="bannerColor" value="#8B4513">
+                </div>
+                
+                <div id="sizeControls" style="display: none;">
+                    <label>Altura do Banner:</label>
+                    <select id="bannerHeight">
+                        <option value="200">Pequeno (200px)</option>
+                        <option value="300" selected>Médio (300px)</option>
+                        <option value="400">Grande (400px)</option>
+                        <option value="500">Extra Grande (500px)</option>
+                        <option value="custom-height">Personalizado</option>
+                    </select>
+                    <input type="number" id="customHeight" placeholder="Altura em pixels" style="display: none; margin-top: 5px;" min="100" max="800">
+                    
+                    <label style="margin-top: 10px; display: block;">Largura do Banner:</label>
+                    <select id="bannerWidth">
+                        <option value="100">Largura Total (100%)</option>
+                        <option value="80">Grande (80%)</option>
+                        <option value="60">Médio (60%)</option>
+                        <option value="40">Pequeno (40%)</option>
+                        <option value="custom-width">Personalizado</option>
+                    </select>
+                    <input type="number" id="customWidth" placeholder="Largura em %" style="display: none; margin-top: 5px;" min="20" max="100">
+                </div>
+                
+                <button onclick="saveBanner()">Salvar</button>
+                <button class="cancel" onclick="cancelEdit()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📜 Linha do Tempo Bíblica</h1>
+            <p>Da Criação de Adão ao Nascimento de Jesus</p>
+        </div>
+        
+        <div class="timeline-container">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot patriarch-dot"></div>
+                    <span>Patriarcas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot event-dot"></div>
+                    <span>Eventos Importantes</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot empire-dot"></div>
+                    <span>Impérios</span>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterTimeline('all')">Todos</button>
+                <button class="filter-btn" onclick="filterTimeline('patriarch')">Patriarcas</button>
+                <button class="filter-btn" onclick="filterTimeline('event')">Eventos</button>
+                <button class="filter-btn" onclick="filterTimeline('empire')">Impérios</button>
+            </div>
+
+            <div class="timeline" id="timeline">
+                <!-- Criação e Patriarcas Antediluvianos -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1</div>
+                    <div class="name">⭐ Criação de Adão</div>
+                    <div class="details">Criação do primeiro homem no Jardim do Éden</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 130</div>
+                    <div class="name">⭐ Nascimento de Sete</div>
+                    <div class="details">Terceiro filho de Adão e Eva, nascido após a morte de Abel</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-130')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-130">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-130')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-130">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 235</div>
+                    <div class="name">⭐ Nascimento de Enos</div>
+                    <div class="details">Filho de Sete, em seus dias começaram a invocar o nome do Senhor</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-235')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-235">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-235')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-235">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 325</div>
+                    <div class="name">⭐ Nascimento de Cainã</div>
+                    <div class="details">Filho de Enos, continuador da linhagem de Sete</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-325')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-325">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-325')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-325">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 1 -->
+                <div class="banner-slot" id="banner-1">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-1')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 395</div>
+                    <div class="name">⭐ Nascimento de Maalalel</div>
+                    <div class="details">Filho de Cainã, patriarca antediluviano</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-395')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-395">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-395')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-395">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 460</div>
+                    <div class="name">⭐ Nascimento de Jarede</div>
+                    <div class="details">Filho de Maalalel, pai de Enoque</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-460')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-460">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-460')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-460">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 622</div>
+                    <div class="name">⭐ Nascimento de Enoque</div>
+                    <div class="details">Filho de Jarede, caminhou com Deus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-622')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-622">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-622')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-622">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 687</div>
+                    <div class="name">⭐ Nascimento de Matusalém</div>
+                    <div class="details">Filho de Enoque, o homem que mais viveu na Bíblia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-687')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-687">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-687')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-687">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 874</div>
+                    <div class="name">⭐ Nascimento de Lameque</div>
+                    <div class="details">Filho de Matusalém, pai de Noé</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-874')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-874">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-874')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-874">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 930</div>
+                    <div class="name">✝️ Morte de Adão</div>
+                    <div class="details">Primeiro homem morre aos 930 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-930')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-930">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-930')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-930">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 987</div>
+                    <div class="name">✨ Trasladação de Enoque</div>
+                    <div class="details">Enoque foi trasladado por Deus aos 365 anos, não viu a morte</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-987')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-987">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-987')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-987">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 2 -->
+                <div class="banner-slot" id="banner-2">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-2')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1042</div>
+                    <div class="name">✝️ Morte de Sete</div>
+                    <div class="details">Sete morre aos 912 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1042')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1042">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1042')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1042">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1056</div>
+                    <div class="name">⭐ Nascimento de Noé</div>
+                    <div class="details">Filho de Lameque, construtor da arca</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1056')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1056">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1056')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1056">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1140</div>
+                    <div class="name">✝️ Morte de Enos</div>
+                    <div class="details">Enos morre aos 905 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1140')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1140">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1140')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1140">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 9 -->
+                <div class="banner-slot" id="banner-9">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-9')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1235</div>
+                    <div class="name">✝️ Morte de Cainã</div>
+                    <div class="details">Cainã morre aos 910 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1235')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1235">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1235')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1235">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1290</div>
+                    <div class="name">✝️ Morte de Maalalel</div>
+                    <div class="details">Maalalel morre aos 895 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1290')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1290">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1290')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1290">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1422</div>
+                    <div class="name">✝️ Morte de Jarede</div>
+                    <div class="details">Jarede morre aos 962 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1422')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1422">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1422')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1422">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 10 -->
+                <div class="banner-slot" id="banner-10">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-10')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1651</div>
+                    <div class="name">✝️ Morte de Lameque</div>
+                    <div class="details">Lameque morre aos 777 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1651')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1651">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1651')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1651">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1656</div>
+                    <div class="name">✝️ Morte de Matusalém</div>
+                    <div class="details">Matusalém morre aos 969 anos, no ano do dilúvio</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1656-matusalem')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1656-matusalem">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1656-matusalem')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1656-matusalem">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O Dilúvio -->
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 1656</div>
+                    <div class="name">🌊 O Grande Dilúvio</div>
+                    <div class="details">Deus envia o dilúvio para destruir a terra. Noé, sua família e os animais são salvos na arca. Duração: 1 ano e 10 dias</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1656-diluvio')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1656-diluvio">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1656-diluvio')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1656-diluvio">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 3 -->
+                <div class="banner-slot" id="banner-3">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-3')">✏️ Editar</button>
+                </div>
+
+                <!-- Patriarcas Pós-Dilúvio -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1658</div>
+                    <div class="name">⭐ Nascimento de Arfaxade</div>
+                    <div class="details">Filho de Sem, nascido 2 anos após o dilúvio</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1658')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1658">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1658')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1658">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1693</div>
+                    <div class="name">⭐ Nascimento de Salá</div>
+                    <div class="details">Filho de Arfaxade</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1693')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1693">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1693')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1693">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1723</div>
+                    <div class="name">⭐ Nascimento de Éber</div>
+                    <div class="details">Filho de Salá, ancestral dos hebreus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1723')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1723">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1723')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1723">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 1757</div>
+                    <div class="name">🗼 Torre de Babel</div>
+                    <div class="details">Construção da Torre de Babel e confusão das línguas. Dispersão da humanidade</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1757-babel')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1757-babel">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1757-babel')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1757-babel">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1757</div>
+                    <div class="name">⭐ Nascimento de Pelegue</div>
+                    <div class="details">Filho de Éber, "em seus dias se repartiu a terra"</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1757-pelegue')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1757-pelegue">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1757-pelegue')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1757-pelegue">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1787</div>
+                    <div class="name">⭐ Nascimento de Reú</div>
+                    <div class="details">Filho de Pelegue</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1787')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1787">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1787')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1787">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 11 -->
+                <div class="banner-slot" id="banner-11">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-11')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1819</div>
+                    <div class="name">⭐ Nascimento de Serugue</div>
+                    <div class="details">Filho de Reú</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1819')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1819">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1819')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1819">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1849</div>
+                    <div class="name">⭐ Nascimento de Naor</div>
+                    <div class="details">Filho de Serugue, avô de Abraão</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1849')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1849">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1849')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1849">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1878</div>
+                    <div class="name">⭐ Nascimento de Terá</div>
+                    <div class="details">Filho de Naor, pai de Abraão</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1878')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1878">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1878')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1878">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Era Patriarcal -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1948</div>
+                    <div class="name">⭐ Nascimento de Abraão</div>
+                    <div class="details">Pai da fé, chamado por Deus para ser pai de muitas nações</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1948')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1948">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1948')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1948">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 4 -->
+                <div class="banner-slot" id="banner-4">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-4')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2034</div>
+                    <div class="name">⭐ Nascimento de Ismael</div>
+                    <div class="details">Primeiro filho de Abraão, nascido de Agar, a serva egípcia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2034')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2034">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2034')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2034">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1996</div>
+                    <div class="name">✝️ Morte de Pelegue</div>
+                    <div class="details">Pelegue morre aos 239 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1996')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1996">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1996')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1996">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 1997</div>
+                    <div class="name">✝️ Morte de Naor</div>
+                    <div class="details">Naor morre aos 148 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-1997')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-1997">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-1997')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-1997">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2006</div>
+                    <div class="name">✝️ Morte de Noé</div>
+                    <div class="details">Noé morre aos 950 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2006')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2006">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2006')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2006">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2023</div>
+                    <div class="name">🚶‍♂️ Chamada de Abraão</div>
+                    <div class="details">Deus chama Abraão para sair de Ur dos Caldeus. Início da aliança com o povo escolhido</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2023')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2023">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2023')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2023">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2026</div>
+                    <div class="name">✝️ Morte de Reú</div>
+                    <div class="details">Reú morre aos 239 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2026')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2026">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2026')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2026">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2048</div>
+                    <div class="name">⭐ Nascimento de Isaque</div>
+                    <div class="details">Filho da promessa, nascido de Abraão e Sara</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2048')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2048">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2048')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2048">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2049</div>
+                    <div class="name">✝️ Morte de Serugue</div>
+                    <div class="details">Serugue morre aos 230 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2049')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2049">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2049')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2049">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2083</div>
+                    <div class="name">✝️ Morte de Terá</div>
+                    <div class="details">Terá morre aos 205 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2083')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2083">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2083')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2083">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2096</div>
+                    <div class="name">✝️ Morte de Arfaxade</div>
+                    <div class="details">Arfaxade morre aos 438 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2096')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2096">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2096')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2096">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 12 -->
+                <div class="banner-slot" id="banner-12">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-12')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2108</div>
+                    <div class="name">⭐ Nascimento de Jacó</div>
+                    <div class="details">Filho de Isaque, depois chamado Israel</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2108')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2108">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2108')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2108">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2123</div>
+                    <div class="name">✝️ Morte de Abraão</div>
+                    <div class="details">Abraão morre aos 175 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2123')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2123">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2123')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2123">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2126</div>
+                    <div class="name">✝️ Morte de Salá</div>
+                    <div class="details">Salá morre aos 433 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2126')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2126">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2126')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2126">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2187</div>
+                    <div class="name">✝️ Morte de Éber</div>
+                    <div class="details">Éber morre aos 464 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2187')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2187">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2187')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2187">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 13 -->
+                <div class="banner-slot" id="banner-13">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-13')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2199</div>
+                    <div class="name">⭐ Nascimento de José</div>
+                    <div class="details">Filho de Jacó, vendido como escravo, tornou-se governador do Egito</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2199')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2199">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2199')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2199">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2216</div>
+                    <div class="name">🌾 José vendido para o Egito</div>
+                    <div class="details">José é vendido pelos irmãos como escravo aos 17 anos e levado ao Egito</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2216')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2216">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2216')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2216">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2228</div>
+                    <div class="name">✝️ Morte de Isaque</div>
+                    <div class="details">Isaque morre aos 180 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2228')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2228">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2228')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2228">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2171</div>
+                    <div class="name">✝️ Morte de Ismael</div>
+                    <div class="details">Ismael morre aos 137 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2171')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2171">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2171')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2171">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2238</div>
+                    <div class="name">🏜️ Jacó vai para o Egito</div>
+                    <div class="details">Jacó e sua família (70 pessoas) descem ao Egito devido à fome</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2238')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2238">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2238')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2238">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2255</div>
+                    <div class="name">✝️ Morte de Jacó</div>
+                    <div class="details">Jacó morre aos 147 anos no Egito</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2255')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2255">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2255')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2255">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2309</div>
+                    <div class="name">✝️ Morte de José</div>
+                    <div class="details">José morre aos 110 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2309')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2309">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2309')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2309">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 14 -->
+                <div class="banner-slot" id="banner-14">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-14')">✏️ Editar</button>
+                </div>
+
+                <!-- Período no Egito -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2368</div>
+                    <div class="name">⭐ Nascimento de Moisés</div>
+                    <div class="details">Libertador de Israel, recebeu a Lei no Monte Sinai</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2368')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2368">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2368')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2368">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2448</div>
+                    <div class="name">🔥 O Êxodo</div>
+                    <div class="details">Moisés liberta Israel do Egito após 430 anos de permanência. As 10 pragas e a Páscoa</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2448')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2448">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2448')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2448">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 5 -->
+                <div class="banner-slot" id="banner-5">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-5')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2449</div>
+                    <div class="name">📜 Entrega da Lei</div>
+                    <div class="details">Moisés recebe os Dez Mandamentos e a Lei no Monte Sinai</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2449')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2449">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2449')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2449">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2488</div>
+                    <div class="name">✝️ Morte de Moisés</div>
+                    <div class="details">Moisés morre aos 120 anos no final dos 40 anos no deserto</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2488')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2488">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2488')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2488">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2489</div>
+                    <div class="name">🏞️ Entrada em Canaã</div>
+                    <div class="details">Josué conduz Israel à Terra Prometida após a morte de Moisés</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2489')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2489">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2489')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2489">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 15 -->
+                <div class="banner-slot" id="banner-15">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-15')">✏️ Editar</button>
+                </div>
+
+                <!-- Período dos Juízes -->
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2489-2838</div>
+                    <div class="name">⚖️ Período dos Juízes</div>
+                    <div class="details">349 anos sob o governo dos Juízes: Otniel, Eúde, Débora, Gideão, Sansão, Samuel e outros</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2489-2838')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2489-2838">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2489-2838')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2489-2838">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reino Unido -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2838</div>
+                    <div class="name">👑 Reinado de Saul</div>
+                    <div class="details">Primeiro rei de Israel, ungido pelo profeta Samuel</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2838')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2838">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2838')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2838">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2878</div>
+                    <div class="name">👑 Reinado de Davi</div>
+                    <div class="details">Rei segundo o coração de Deus, conquistador de Jerusalém</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2878')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2878">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2878')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2878">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2918</div>
+                    <div class="name">👑 Reinado de Salomão</div>
+                    <div class="details">Rei sábio, construtor do Primeiro Templo</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2918')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2918">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2918')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2918">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 16 -->
+                <div class="banner-slot" id="banner-16">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-16')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2925</div>
+                    <div class="name">🏛️ Construção do Templo</div>
+                    <div class="details">Salomão constrói o Primeiro Templo em Jerusalém</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2925')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2925">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2925')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2925">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 6 -->
+                <div class="banner-slot" id="banner-6">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-6')">✏️ Editar</button>
+                </div>
+
+                <!-- Reino Dividido -->
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 2958</div>
+                    <div class="name">⚔️ Divisão do Reino</div>
+                    <div class="details">Reino se divide em Israel (Norte) e Judá (Sul) após a morte de Salomão</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2958')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2958">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2958')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2958">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reis de Judá - Linhagem de Jesus -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2958</div>
+                    <div class="name">👑 Reinado de Roboão</div>
+                    <div class="details">Filho de Salomão, primeiro rei de Judá após a divisão</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2958-roboao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2958-roboao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2958-roboao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2958-roboao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2975</div>
+                    <div class="name">👑 Reinado de Abias</div>
+                    <div class="details">Filho de Roboão, rei de Judá por 3 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2975')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2975">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2975')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2975">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 2978</div>
+                    <div class="name">👑 Reinado de Asa</div>
+                    <div class="details">Filho de Abias, rei justo que reinou 41 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-2978')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-2978">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-2978')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-2978">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3019</div>
+                    <div class="name">👑 Reinado de Josafá</div>
+                    <div class="details">Filho de Asa, rei piedoso que buscou ao Senhor</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3019')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3019">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3019')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3019">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3044</div>
+                    <div class="name">👑 Reinado de Jeorão</div>
+                    <div class="details">Filho de Josafá, casou com filha de Acabe</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3044')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3044">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3044')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3044">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3052</div>
+                    <div class="name">👑 Reinado de Acazias</div>
+                    <div class="details">Filho de Jeorão, reinou apenas 1 ano</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3052')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3052">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3052')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3052">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3053</div>
+                    <div class="name">👑 Reinado de Joás</div>
+                    <div class="details">Filho de Acazias, salvo da matança de Atalia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3053')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3053">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3053')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3053">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3093</div>
+                    <div class="name">👑 Reinado de Amazias</div>
+                    <div class="details">Filho de Joás, reinou 29 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3093')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3093">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3093')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3093">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3122</div>
+                    <div class="name">👑 Reinado de Uzias (Azarias)</div>
+                    <div class="details">Filho de Amazias, rei próspero que reinou 52 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3122')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3122">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3122')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3122">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 17 -->
+                <div class="banner-slot" id="banner-17">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-17')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3174</div>
+                    <div class="name">👑 Reinado de Jotão</div>
+                    <div class="details">Filho de Uzias, rei justo que reinou 16 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3174')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3174">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3174')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3174">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3190</div>
+                    <div class="name">👑 Reinado de Acaz</div>
+                    <div class="details">Filho de Jotão, rei ímpio que reinou 16 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3190')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3190">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3190')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3190">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3206</div>
+                    <div class="name">👑 Reinado de Ezequias</div>
+                    <div class="details">Filho de Acaz, rei piedoso que promoveu reforma religiosa</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3206')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3206">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3206')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3206">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3235</div>
+                    <div class="name">👑 Reinado de Manassés</div>
+                    <div class="details">Filho de Ezequias, reinou 55 anos, se arrependeu no final</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3235')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3235">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3235')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3235">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3290</div>
+                    <div class="name">👑 Reinado de Amom</div>
+                    <div class="details">Filho de Manassés, rei ímpio que reinou 2 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3290')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3290">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3290')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3290">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3292</div>
+                    <div class="name">👑 Reinado de Josias</div>
+                    <div class="details">Filho de Amom, grande reformador religioso</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3292')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3292">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3292')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3292">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3300</div>
+                    <div class="name">📜 Descoberta do Livro da Lei</div>
+                    <div class="details">Durante reformas no templo, é encontrado o livro da Lei</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3300')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3300">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3300')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3300">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3323</div>
+                    <div class="name">👑 Reinado de Jeoacaz</div>
+                    <div class="details">Filho de Josias, reinou 3 meses</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3323-jeoacaz')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3323-jeoacaz">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3323-jeoacaz')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3323-jeoacaz">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3323</div>
+                    <div class="name">👑 Reinado de Jeoaquim</div>
+                    <div class="details">Filho de Josias, reinou 11 anos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3323-jeoaquim')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3323-jeoaquim">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3323-jeoaquim')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3323-jeoaquim">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3334</div>
+                    <div class="name">👑 Reinado de Joaquim</div>
+                    <div class="details">Filho de Jeoaquim, reinou 3 meses</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3334-joaquim')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3334-joaquim">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3334-joaquim')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3334-joaquim">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3334</div>
+                    <div class="name">👑 Reinado de Zedequias</div>
+                    <div class="details">Último rei de Judá, tio de Joaquim</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3334-zedequias')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3334-zedequias">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3334-zedequias')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3334-zedequias">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impérios Mundiais -->
+                <div class="timeline-item empire" data-category="empire">
+                    <div class="year">Ano 3180</div>
+                    <div class="name">🦁 Império Babilônico</div>
+                    <div class="details">Nabucodonosor conquista Jerusalém e leva Judá cativo</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3180')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3180">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3180')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3180">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3208</div>
+                    <div class="name">🔥 Destruição do Templo</div>
+                    <div class="details">Nabucodonosor destrói o Primeiro Templo e leva o povo cativo para Babilônia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3208')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3208">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3208')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3208">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 7 -->
+                <div class="banner-slot" id="banner-7">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-7')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item empire" data-category="empire">
+                    <div class="year">Ano 3389</div>
+                    <div class="name">🐻 Império Medo-Persa</div>
+                    <div class="details">Ciro, o Grande, conquista Babilônia e permite o retorno dos judeus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3389')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3389">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3389')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3389">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3390</div>
+                    <div class="name">🏠 Retorno do Exílio</div>
+                    <div class="details">Ciro permite o retorno dos judeus e a reconstrução do Templo</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3390')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3390">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3390')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3390">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3395</div>
+                    <div class="name">🏛️ Segundo Templo</div>
+                    <div class="details">Reconstrução do Templo sob Zorobabel é concluída</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3395')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3395">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3395')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3395">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linhagem Pós-Exílio -->
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3400</div>
+                    <div class="name">⭐ Zorobabel</div>
+                    <div class="details">Governador de Judá, descendente de Davi, liderou a reconstrução</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3400')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3400">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3400')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3400">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3430</div>
+                    <div class="name">⭐ Abiúde</div>
+                    <div class="details">Filho de Zorobabel, continuador da linhagem davídica</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3430')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3430">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3430')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3430">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 18 -->
+                <div class="banner-slot" id="banner-18">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-18')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3460</div>
+                    <div class="name">⭐ Eliaquim</div>
+                    <div class="details">Filho de Abiúde, ancestral de Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3460')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3460">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3460')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3460">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3490</div>
+                    <div class="name">⭐ Azor</div>
+                    <div class="details">Filho de Eliaquim, da linhagem real de Judá</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3490')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3490">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3490')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3490">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3520</div>
+                    <div class="name">⭐ Sadoque</div>
+                    <div class="details">Filho de Azor, continuador da genealogia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3520')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3520">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3520')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3520">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3550</div>
+                    <div class="name">⭐ Aquim</div>
+                    <div class="details">Filho de Sadoque, ancestral de Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3550')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3550">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3550')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3550">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3580</div>
+                    <div class="name">⭐ Eliúde</div>
+                    <div class="details">Filho de Aquim, da linhagem davídica</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3580')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3580">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3580')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3580">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item empire" data-category="empire">
+                    <div class="year">Ano 3622</div>
+                    <div class="name">🐆 Império Grego</div>
+                    <div class="details">Alexandre, o Grande, conquista o mundo conhecido</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3622')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3622">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3622')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3622">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3610</div>
+                    <div class="name">⭐ Eleazar</div>
+                    <div class="details">Filho de Eliúde, continuador da genealogia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3610')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3610">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3610')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3610">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3640</div>
+                    <div class="name">⭐ Matã</div>
+                    <div class="details">Filho de Eleazar, ancestral próximo de Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3640')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3640">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3640')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3640">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3670</div>
+                    <div class="name">⭐ Jacó (pai de José)</div>
+                    <div class="details">Filho de Matã, pai de José, o carpinteiro</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3670')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3670">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3670')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3670">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 19 -->
+                <div class="banner-slot" id="banner-19">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-19')">✏️ Editar</button>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3700</div>
+                    <div class="name">📜 Período Intertestamentário</div>
+                    <div class="details">400 anos de silêncio profético entre Malaquias e João Batista</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3700')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3700">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3700')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3700">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item empire" data-category="empire">
+                    <div class="year">Ano 3784</div>
+                    <div class="name">🦅 Império Romano</div>
+                    <div class="details">Roma conquista a região e estabelece seu domínio</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3784')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3784">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3784')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3784">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3970</div>
+                    <div class="name">⭐ Nascimento de José</div>
+                    <div class="details">Carpinteiro de Nazaré, pai adotivo de Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3970')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3970">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3970')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3970">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item patriarch" data-category="patriarch">
+                    <div class="year">Ano 3985</div>
+                    <div class="name">⭐ Nascimento de Maria</div>
+                    <div class="details">Virgem escolhida por Deus para ser mãe do Messias</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3985')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3985">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3985')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3985">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 3996</div>
+                    <div class="name">👼 Anunciação</div>
+                    <div class="details">O anjo Gabriel anuncia a Maria que ela conceberá Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-3996')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-3996">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-3996')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-3996">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 8 -->
+                <div class="banner-slot" id="banner-8">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-8')">✏️ Editar</button>
+                </div>
+
+                <!-- Nascimento e Vida de Jesus -->
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4000</div>
+                    <div class="name">⭐ Nascimento de Jesus</div>
+                    <div class="details">O Messias prometido nasce em Belém, cumprindo as profecias</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4000-nascimento')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4000-nascimento">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4000-nascimento')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4000-nascimento">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4000</div>
+                    <div class="name">🌟 Visita dos Magos</div>
+                    <div class="details">Magos do Oriente vêm adorar o menino Jesus</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4000-magos')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4000-magos">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4000-magos')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4000-magos">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4001</div>
+                    <div class="name">🏃‍♂️ Fuga para o Egito</div>
+                    <div class="details">José e Maria fogem com Jesus para escapar de Herodes</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4001')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4001">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4001')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4001">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4004</div>
+                    <div class="name">🏠 Retorno a Nazaré</div>
+                    <div class="details">A família retorna e se estabelece em Nazaré</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4004')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4004">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4004')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4004">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4012</div>
+                    <div class="name">🏛️ Jesus no Templo</div>
+                    <div class="details">Aos 12 anos, Jesus ensina os doutores no templo</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4012')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4012">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4012')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4012">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4026</div>
+                    <div class="name">🌊 Batismo de Jesus</div>
+                    <div class="details">João Batista batiza Jesus no rio Jordão</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4026-batismo')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4026-batismo">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4026-batismo')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4026-batismo">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4026</div>
+                    <div class="name">🏜️ Tentação no Deserto</div>
+                    <div class="details">Jesus jejua 40 dias e é tentado por Satanás</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4026-tentacao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4026-tentacao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4026-tentacao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4026-tentacao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4027</div>
+                    <div class="name">👥 Chamada dos Discípulos</div>
+                    <div class="details">Jesus chama os 12 apóstolos para segui-lo</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4027-discipulos')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4027-discipulos">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4027-discipulos')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4027-discipulos">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4027</div>
+                    <div class="name">🍷 Bodas de Caná</div>
+                    <div class="details">Primeiro milagre de Jesus: transformação da água em vinho</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4027-cana')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4027-cana">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4027-cana')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4027-cana">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4028</div>
+                    <div class="name">⛰️ Sermão do Monte</div>
+                    <div class="details">Jesus ensina as bem-aventuranças e o Pai Nosso</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4028')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4028">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4028')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4028">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4029</div>
+                    <div class="name">🌊 Jesus Anda sobre as Águas</div>
+                    <div class="details">Jesus caminha sobre o mar da Galileia</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4029-aguas')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4029-aguas">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4029-aguas')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4029-aguas">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4029</div>
+                    <div class="name">🍞 Multiplicação dos Pães</div>
+                    <div class="details">Jesus alimenta 5.000 pessoas com 5 pães e 2 peixes</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4029-paes')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4029-paes">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4029-paes')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4029-paes">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">✨ Transfiguração</div>
+                    <div class="details">Jesus se transfigura no monte diante de Pedro, Tiago e João</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-transfiguracao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-transfiguracao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-transfiguracao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-transfiguracao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">💀 Ressurreição de Lázaro</div>
+                    <div class="details">Jesus ressuscita Lázaro após 4 dias morto</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-lazaro')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-lazaro">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-lazaro')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-lazaro">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">🌴 Entrada Triunfal</div>
+                    <div class="details">Jesus entra em Jerusalém montado em um jumentinho</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-entrada')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-entrada">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-entrada')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-entrada">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">🍞 Última Ceia</div>
+                    <div class="details">Jesus institui a Santa Ceia com os discípulos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-ceia')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-ceia">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-ceia')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-ceia">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">⚖️ Julgamento de Jesus</div>
+                    <div class="details">Jesus é julgado por Pilatos e condenado à morte</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-julgamento')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-julgamento">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-julgamento')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-julgamento">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">✝️ Crucificação</div>
+                    <div class="details">Jesus morre na cruz do Calvário pelos pecados da humanidade</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-crucificacao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-crucificacao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-crucificacao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-crucificacao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">🌅 Ressurreição</div>
+                    <div class="details">Jesus ressuscita ao terceiro dia, vencendo a morte</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-ressurreicao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-ressurreicao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-ressurreicao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-ressurreicao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item event" data-category="event">
+                    <div class="year">Ano 4030</div>
+                    <div class="name">☁️ Ascensão</div>
+                    <div class="details">Jesus ascende aos céus após 40 dias com os discípulos</div>
+                    <button class="comment-toggle" onclick="toggleComments('year-4030-ascensao')">💬 Comentários</button>
+                    <div class="comments-section" id="comments-year-4030-ascensao">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Deixe seu comentário sobre este evento..."></textarea>
+                            <button class="comment-submit" onclick="addComment('year-4030-ascensao')">Enviar Comentário</button>
+                        </div>
+                        <div class="comments-list" id="comments-list-year-4030-ascensao">
+                            <div class="no-comments">Seja o primeiro a comentar!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Slot 20 -->
+                <div class="banner-slot" id="banner-20">
+                    <div class="banner-placeholder">📸 Espaço para Banner/Imagem/Vídeo</div>
+                    <button class="banner-edit-btn" onclick="editBanner('banner-20')">✏️ Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Footer -->
+    <div class="floating-footer">
+        Deixe o seu comentário
+    </div>
+
+    <script>
+        // Comments storage with localStorage persistence
+        let commentsData = {};
+        
+        // Banner storage with localStorage persistence
+        let bannerData = {};
+        let currentEditingBanner = null;
+
+        // Load data from localStorage on page load
+        function loadStoredData() {
+            try {
+                const storedComments = localStorage.getItem('biblicalTimelineComments');
+                const storedBanners = localStorage.getItem('biblicalTimelineBanners');
+                
+                if (storedComments) {
+                    commentsData = JSON.parse(storedComments);
+                }
+                
+                if (storedBanners) {
+                    bannerData = JSON.parse(storedBanners);
+                    // Restore banners on page load
+                    restoreBanners();
+                }
+                
+                // Display all stored comments
+                Object.keys(commentsData).forEach(eventId => {
+                    displayComments(eventId);
+                });
+                
+            } catch (error) {
+                console.log('Erro ao carregar dados salvos:', error);
+            }
+        }
+
+        // Save comments to localStorage
+        function saveCommentsToStorage() {
+            try {
+                localStorage.setItem('biblicalTimelineComments', JSON.stringify(commentsData));
+            } catch (error) {
+                console.log('Erro ao salvar comentários:', error);
+            }
+        }
+
+        // Save banners to localStorage
+        function saveBannersToStorage() {
+            try {
+                localStorage.setItem('biblicalTimelineBanners', JSON.stringify(bannerData));
+            } catch (error) {
+                console.log('Erro ao salvar banners:', error);
+            }
+        }
+
+        // Restore banners from stored data
+        function restoreBanners() {
+            Object.keys(bannerData).forEach(bannerId => {
+                const bannerElement = document.getElementById(bannerId);
+                if (bannerElement && bannerData[bannerId]) {
+                    const data = bannerData[bannerId];
+                    const height = data.height || 300; // Default height if not set
+                    const width = data.width || 100; // Default width if not set
+                    let content = '';
+                    
+                    const containerStyle = `height: ${height}px; width: ${width}%; margin: 0 auto;`;
+                    
+                    if (data.type === 'image') {
+                        content = `<div class="banner-content" style="${containerStyle}"><img src="${data.url}" alt="${data.alt}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;" onerror="this.src=''; this.alt='Imagem não pôde ser carregada'; this.style.display='none';"></div>`;
+                    } else if (data.type === 'video') {
+                        content = `<div class="banner-content" style="${containerStyle}"><iframe src="https://www.youtube.com/embed/${data.videoId}" style="width: 100%; height: 100%; border: none; border-radius: 10px;" allowfullscreen></iframe></div>`;
+                    } else if (data.type === 'text') {
+                        content = `<div class="banner-content" style="background: ${data.color}; color: white; padding: 30px; text-align: center; border-radius: 10px; ${containerStyle} display: flex; flex-direction: column; justify-content: center;">
+                            ${data.title ? `<h3 style="margin: 0 0 15px 0; font-size: 1.5rem;">${data.title}</h3>` : ''}
+                            ${data.text ? `<p style="margin: 0; font-size: 1.1rem; line-height: 1.6;">${data.text}</p>` : ''}
+                        </div>`;
+                    }
+                    
+                    // Update banner slot height
+                    bannerElement.style.minHeight = `${height}px`;
+                    
+                    bannerElement.innerHTML = content + `<button class="banner-edit-btn" onclick="editBanner('${bannerId}')">✏️ Editar</button>`;
+                }
+            });
+        }
+
+        function filterTimeline(category) {
+            const items = document.querySelectorAll('.timeline-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Remove active class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Show/hide items based on category
+            items.forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) {
+                    item.style.display = 'block';
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateX(0)';
+                    }, 100);
+                } else {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
+        function toggleComments(eventId) {
+            const commentsSection = document.getElementById(`comments-${eventId}`);
+            const isActive = commentsSection.classList.contains('active');
+            
+            if (isActive) {
+                commentsSection.classList.remove('active');
+                commentsSection.style.display = 'none';
+            } else {
+                commentsSection.classList.add('active');
+                commentsSection.style.display = 'block';
+            }
+        }
+
+        function addComment(eventId) {
+            const textarea = document.querySelector(`#comments-${eventId} .comment-input`);
+            const commentText = textarea.value.trim();
+            
+            if (!commentText) {
+                alert('Por favor, escreva um comentário antes de enviar!');
+                return;
+            }
+
+            // Initialize comments array for this event if it doesn't exist
+            if (!commentsData[eventId]) {
+                commentsData[eventId] = [];
+            }
+
+            // Create comment object
+            const comment = {
+                id: Date.now(),
+                text: commentText,
+                author: 'Usuário Anônimo',
+                date: new Date().toLocaleString('pt-BR')
+            };
+
+            // Add comment to data
+            commentsData[eventId].push(comment);
+
+            // Save to localStorage
+            saveCommentsToStorage();
+
+            // Clear textarea
+            textarea.value = '';
+
+            // Update comments display
+            displayComments(eventId);
+            
+            // Show success message
+            showNotification('Comentário salvo! Outros usuários poderão vê-lo.');
+        }
+
+        function displayComments(eventId) {
+            const commentsList = document.getElementById(`comments-list-${eventId}`);
+            const comments = commentsData[eventId] || [];
+
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">Seja o primeiro a comentar!</div>';
+                return;
+            }
+
+            const commentsHTML = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-author">${comment.author}</div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-date">${comment.date}</div>
+                </div>
+            `).join('');
+
+            commentsList.innerHTML = commentsHTML;
+        }
+
+        // Add smooth scrolling and highlight effect
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't highlight if clicking on comment button or form
+                if (e.target.classList.contains('comment-toggle') || 
+                    e.target.classList.contains('comment-submit') ||
+                    e.target.classList.contains('comment-input')) {
+                    return;
+                }
+                
+                this.style.background = '#FFF8DC';
+                setTimeout(() => {
+                    this.style.background = 'white';
+                }, 1000);
+            });
+        });
+
+        // Admin functions
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+        }
+
+        function editBanner(bannerId) {
+            currentEditingBanner = bannerId;
+            const adminForm = document.getElementById('adminForm');
+            const panel = document.getElementById('adminPanel');
+            
+            // Show admin panel and form
+            panel.classList.add('active');
+            adminForm.style.display = 'block';
+            
+            // Load existing data if available
+            if (bannerData[bannerId]) {
+                const data = bannerData[bannerId];
+                document.getElementById('contentType').value = data.type;
+                toggleContentFields();
+                
+                // Set height
+                const height = data.height || 300;
+                if (['200', '300', '400', '500'].includes(height.toString())) {
+                    document.getElementById('bannerHeight').value = height;
+                } else {
+                    document.getElementById('bannerHeight').value = 'custom-height';
+                    document.getElementById('customHeight').value = height;
+                    document.getElementById('customHeight').style.display = 'block';
+                }
+                
+                // Set width
+                const width = data.width || 100;
+                if (['100', '80', '60', '40'].includes(width.toString())) {
+                    document.getElementById('bannerWidth').value = width;
+                } else {
+                    document.getElementById('bannerWidth').value = 'custom-width';
+                    document.getElementById('customWidth').value = width;
+                    document.getElementById('customWidth').style.display = 'block';
+                }
+                
+                if (data.type === 'image') {
+                    document.getElementById('imageUrl').value = data.url || '';
+                    document.getElementById('imageAlt').value = data.alt || '';
+                } else if (data.type === 'video') {
+                    document.getElementById('videoId').value = data.videoId || '';
+                } else if (data.type === 'text') {
+                    document.getElementById('bannerTitle').value = data.title || '';
+                    document.getElementById('bannerText').value = data.text || '';
+                    document.getElementById('bannerColor').value = data.color || '#8B4513';
+                }
+            }
+        }
+
+        function toggleContentFields() {
+            const contentType = document.getElementById('contentType').value;
+            const imageFields = document.getElementById('imageFields');
+            const videoFields = document.getElementById('videoFields');
+            const textFields = document.getElementById('textFields');
+            const sizeControls = document.getElementById('sizeControls');
+            
+            // Hide all fields
+            imageFields.style.display = 'none';
+            videoFields.style.display = 'none';
+            textFields.style.display = 'none';
+            sizeControls.style.display = 'none';
+            
+            // Show relevant fields
+            if (contentType === 'image') {
+                imageFields.style.display = 'block';
+                sizeControls.style.display = 'block';
+            } else if (contentType === 'video') {
+                videoFields.style.display = 'block';
+                sizeControls.style.display = 'block';
+            } else if (contentType === 'text') {
+                textFields.style.display = 'block';
+                sizeControls.style.display = 'block';
+            }
+        }
+
+        // Handle custom height and width inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const bannerHeight = document.getElementById('bannerHeight');
+            const customHeight = document.getElementById('customHeight');
+            const bannerWidth = document.getElementById('bannerWidth');
+            const customWidth = document.getElementById('customWidth');
+            
+            if (bannerHeight) {
+                bannerHeight.addEventListener('change', function() {
+                    if (this.value === 'custom-height') {
+                        customHeight.style.display = 'block';
+                        customHeight.required = true;
+                    } else {
+                        customHeight.style.display = 'none';
+                        customHeight.required = false;
+                    }
+                });
+            }
+            
+            if (bannerWidth) {
+                bannerWidth.addEventListener('change', function() {
+                    if (this.value === 'custom-width') {
+                        customWidth.style.display = 'block';
+                        customWidth.required = true;
+                    } else {
+                        customWidth.style.display = 'none';
+                        customWidth.required = false;
+                    }
+                });
+            }
+        });
+
+        function saveBanner() {
+            if (!currentEditingBanner) return;
+            
+            const contentType = document.getElementById('contentType').value;
+            if (!contentType) {
+                alert('Por favor, selecione o tipo de conteúdo!');
+                return;
+            }
+            
+            // Get height settings
+            const heightSelect = document.getElementById('bannerHeight').value;
+            const customHeight = document.getElementById('customHeight').value;
+            let height = heightSelect === 'custom-height' ? customHeight : heightSelect;
+            
+            if (heightSelect === 'custom-height' && !customHeight) {
+                alert('Por favor, insira a altura personalizada!');
+                return;
+            }
+            
+            // Get width settings
+            const widthSelect = document.getElementById('bannerWidth').value;
+            const customWidth = document.getElementById('customWidth').value;
+            let width = widthSelect === 'custom-width' ? customWidth : widthSelect;
+            
+            if (widthSelect === 'custom-width' && !customWidth) {
+                alert('Por favor, insira a largura personalizada!');
+                return;
+            }
+            
+            const bannerElement = document.getElementById(currentEditingBanner);
+            let content = '';
+            const containerStyle = `height: ${height}px; width: ${width}%; margin: 0 auto;`;
+            
+            if (contentType === 'image') {
+                const url = document.getElementById('imageUrl').value;
+                const alt = document.getElementById('imageAlt').value;
+                
+                if (!url) {
+                    alert('Por favor, insira a URL da imagem!');
+                    return;
+                }
+                
+                content = `<div class="banner-content" style="${containerStyle}"><img src="${url}" alt="${alt}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;" onerror="this.src=''; this.alt='Imagem não pôde ser carregada'; this.style.display='none';"></div>`;
+                bannerData[currentEditingBanner] = { type: 'image', url, alt, height, width };
+                
+            } else if (contentType === 'video') {
+                const videoId = document.getElementById('videoId').value;
+                
+                if (!videoId) {
+                    alert('Por favor, insira o ID do vídeo do YouTube!');
+                    return;
+                }
+                
+                content = `<div class="banner-content" style="${containerStyle}"><iframe src="https://www.youtube.com/embed/${videoId}" style="width: 100%; height: 100%; border: none; border-radius: 10px;" allowfullscreen></iframe></div>`;
+                bannerData[currentEditingBanner] = { type: 'video', videoId, height, width };
+                
+            } else if (contentType === 'text') {
+                const title = document.getElementById('bannerTitle').value;
+                const text = document.getElementById('bannerText').value;
+                const color = document.getElementById('bannerColor').value;
+                
+                if (!title && !text) {
+                    alert('Por favor, insira pelo menos um título ou texto!');
+                    return;
+                }
+                
+                content = `<div class="banner-content" style="background: ${color}; color: white; padding: 30px; text-align: center; border-radius: 10px; ${containerStyle} display: flex; flex-direction: column; justify-content: center;">
+                    ${title ? `<h3 style="margin: 0 0 15px 0; font-size: 1.5rem;">${title}</h3>` : ''}
+                    ${text ? `<p style="margin: 0; font-size: 1.1rem; line-height: 1.6;">${text}</p>` : ''}
+                </div>`;
+                bannerData[currentEditingBanner] = { type: 'text', title, text, color, height, width };
+            }
+            
+            // Update banner slot height
+            bannerElement.style.minHeight = `${height}px`;
+            
+            // Save to localStorage
+            saveBannersToStorage();
+            
+            // Update banner content
+            bannerElement.innerHTML = content + `<button class="banner-edit-btn" onclick="editBanner('${currentEditingBanner}')">✏️ Editar</button>`;
+            
+            // Close admin panel
+            cancelEdit();
+            
+            // Show success message
+            showNotification('Banner salvo com tamanho e largura personalizados!');
+        }
+
+        function cancelEdit() {
+            currentEditingBanner = null;
+            document.getElementById('adminForm').style.display = 'none';
+            document.getElementById('adminPanel').classList.remove('active');
+            
+            // Clear form
+            document.getElementById('contentType').value = '';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imageAlt').value = '';
+            document.getElementById('videoId').value = '';
+            document.getElementById('bannerTitle').value = '';
+            document.getElementById('bannerText').value = '';
+            document.getElementById('bannerColor').value = '#8B4513';
+            document.getElementById('bannerHeight').value = '300';
+            document.getElementById('customHeight').value = '';
+            document.getElementById('customHeight').style.display = 'none';
+            document.getElementById('bannerWidth').value = '100';
+            document.getElementById('customWidth').value = '';
+            document.getElementById('customWidth').style.display = 'none';
+            toggleContentFields();
+        }
+
+        // Show notification function
+        function showNotification(message) {
+            // Remove existing notification if any
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #28a745;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 2000;
+                font-weight: bold;
+                animation: slideInDown 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutUp 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize with smooth entrance animation
+        window.addEventListener('load', function() {
+            // Load stored data first
+            loadStoredData();
+            
+            const items = document.querySelectorAll('.timeline-item, .banner-slot');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 30);
+            });
+
+            // All comment sections are now manually added to each timeline item
+        });
+
+        // All timeline items now have their comment sections manually added with unique IDs
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9884c9acf6336493',t:'MTc1OTQxNDI3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
