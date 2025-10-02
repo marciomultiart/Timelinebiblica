@@ -1,2 +1,2 @@
 # Timelinebiblica
-Linda do tempo de Adão a Jesus Cristo. 
+Linha do tempo de Adão a Jesus Cristo. 
